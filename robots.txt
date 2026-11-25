@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /scan.html
+
+Sitemap: https://wolf-friseur.de/sitemap.xml

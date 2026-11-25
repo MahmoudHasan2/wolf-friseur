@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wolf Friseur – Besuch erfassen</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --primary:   #1a3a6e;
+      --secondary: #c0392b;
+      --white:     #ffffff;
+      --bg-dark:   #0a0a0a;
+      --text-muted:#888888;
+      --glass-bg:  rgba(255,255,255,0.03);
+      --glass-border:rgba(255,255,255,0.08);
+      --success:   #2ecc71;
+      --error:     #e74c3c;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{
+      background:var(--bg-dark);color:var(--white);
+      font-family:'Montserrat',sans-serif;
+      min-height:100vh;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;padding:2rem 1rem;
+      position:relative;overflow-x:hidden;
+      transition:background .7s;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;pointer-events:none;
+      background:
+        radial-gradient(ellipse at 15% 15%, rgba(26,58,110,.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(192,57,43,.07) 0%, transparent 50%);
+    }
+    body.s-stamp {background:#030d05}
+    body.s-free  {background:#04091a}
+    body.s-redeem{background:#04091a}
+    body.s-err   {background:#0d0303}
+
+    .logo{display:flex;flex-direction:column;align-items:center;gap:.62rem;margin-bottom:2rem}
+    .logo img{width:70px}
+    .logo .name{font-family:'Cormorant Garamond',serif;font-size:1.38rem;font-weight:700;letter-spacing:.27em;color:var(--white);text-transform:uppercase}
+
+    .box{
+      background:var(--glass-bg);border:1px solid var(--glass-border);
+      border-radius:4px;padding:2.3rem 1.9rem;width:100%;max-width:400px;
+      text-align:center;position:relative;
+      box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px rgba(26,58,110,.15);
+    }
+    .box::before{content:'';position:absolute;top:0;right:0;width:34px;height:34px;border-top:2px solid var(--primary);border-right:2px solid var(--primary);border-radius:0 4px 0 0}
+    .box::after {content:'';position:absolute;bottom:0;left:0;width:34px;height:34px;border-bottom:2px solid var(--primary);border-left:2px solid var(--primary);border-radius:0 0 0 4px}
+
+    .ring{width:78px;height:78px;border-radius:50%;border:3px solid var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 1.4rem;font-size:1.9rem;transition:border-color .4s,background .4s}
+    .ring.green {border-color:var(--success);background:rgba(46,204,113,.1)}
+    .ring.navy  {border-color:var(--primary);background:rgba(26,58,110,.12);animation:pulse 2s ease infinite}
+    .ring.blue  {border-color:#3498db;background:rgba(52,152,219,.1)}
+    .ring.red   {border-color:var(--error);background:rgba(231,76,60,.1)}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(26,58,110,.5)}50%{box-shadow:0 0 0 14px rgba(26,58,110,0)}}
+
+    .title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--white);margin-bottom:.38rem}
+    .sub2{font-size:.63rem;letter-spacing:.13em;color:var(--text-muted);text-transform:uppercase;margin-bottom:1.15rem}
+    .div{height:1px;background:linear-gradient(90deg,transparent,var(--primary),transparent);opacity:.55;margin:1.1rem 0}
+    .cust{font-size:.79rem;color:var(--text-muted);margin-bottom:.9rem}
+    .cust strong{display:block;font-size:.94rem;color:var(--white);margin-bottom:.15rem}
+
+    .mc-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.52rem;margin:1rem 0}
+    .mc{aspect-ratio:1;border-radius:50%;border:2px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:.67rem;transition:all .4s ease;color:rgba(255,255,255,.2)}
+    .mc.done{border-color:var(--success);background:rgba(46,204,113,.16);color:var(--success);font-weight:700;box-shadow:0 0 8px rgba(46,204,113,.22)}
+    .mc.new{animation:pop .5s cubic-bezier(.34,1.56,.64,1) both}
+    @keyframes pop{0%{transform:scale(.3);opacity:0}100%{transform:scale(1);opacity:1}}
+    .cnt{font-size:.65rem;color:var(--text-muted)}
+    .cnt span{color:var(--white);font-weight:600}
+
+    /* navy ribbon for free/redeem */
+    .ribbon{
+      background:linear-gradient(135deg,var(--primary),#2a5298,var(--primary));
+      background-size:200% 200%;animation:sh 3s ease infinite;
+      border-radius:4px;padding:.85rem 1rem;margin:1rem 0;
+      border:1px solid rgba(26,58,110,.5);
+      box-shadow:0 0 20px rgba(26,58,110,.3);
+    }
+    @keyframes sh{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+    .ribbon .rt{font-family:'Cormorant Garamond',serif;font-size:1.12rem;font-weight:700;color:var(--white);display:block}
+    .ribbon .rs{font-size:.6rem;letter-spacing:.1em;color:rgba(255,255,255,.65);text-transform:uppercase}
+
+    /* red accent for 10th visit */
+    .ribbon.red-accent{background:linear-gradient(135deg,var(--secondary),#a93226,var(--secondary));border-color:rgba(192,57,43,.5);box-shadow:0 0 20px rgba(192,57,43,.3)}
+
+    .field{margin-bottom:.97rem;text-align:left}
+    .field label{display:block;font-size:.6rem;letter-spacing:.14em;color:#6b8fd4;text-transform:uppercase;margin-bottom:.4rem}
+    .field input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:3px;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.88rem;padding:.7rem .92rem;outline:none;transition:border-color .22s,background .22s,box-shadow .22s}
+    .field input:focus{border-color:var(--primary);background:rgba(26,58,110,.08);box-shadow:0 0 0 3px rgba(26,58,110,.18)}
+    .field input::placeholder{color:var(--text-muted)}
+    .field input[type=tel]{direction:ltr;text-align:left}
+
+    .btn{width:100%;margin-top:.2rem;padding:.84rem;background:var(--primary);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.76rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer;transition:background .2s,transform .12s,box-shadow .2s;box-shadow:0 4px 15px rgba(26,58,110,.4)}
+    .btn:hover{background:#1e4480;transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,58,110,.5)}
+    .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+    .btn.outline{background:transparent;border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);box-shadow:none}
+    .btn.outline:hover{background:rgba(255,255,255,.05);transform:none;box-shadow:none}
+
+    .link-go{display:inline-block;margin-top:1.1rem;padding:.74rem 1.9rem;background:var(--primary);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.74rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer;text-decoration:none;transition:background .2s,box-shadow .2s;box-shadow:0 4px 15px rgba(26,58,110,.4)}
+    .link-go:hover{background:#1e4480;box-shadow:0 6px 20px rgba(26,58,110,.5)}
+
+    .note{font-size:.68rem;color:var(--text-muted);line-height:1.8;margin-top:.6rem}
+    .msg{margin-top:.72rem;padding:.62rem .88rem;border-radius:3px;font-size:.75rem;text-align:center;display:none}
+    .msg.err{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.35);color:#e74c3c;display:block}
+
+    .spin-big{width:38px;height:38px;border:3px solid rgba(26,58,110,.25);border-top-color:var(--primary);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 1.3rem}
+    .spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+
+<div class="logo">
+  <img src="https://i.ibb.co/pvm4r092/Element-255.png" alt="Wolf Friseur" onerror="this.style.display='none'"/>
+  <span class="name">Wolf Friseur</span>
+</div>
+
+<div class="box">
+
+  <!-- ① Laden -->
+  <div id="stLoad">
+    <div class="spin-big"></div>
+    <div class="title">Wird geprüft...</div>
+    <div class="sub2">Bitte warten</div>
+  </div>
+
+  <!-- ② Eingabe -->
+  <div id="stAsk" style="display:none">
+    <div class="ring navy">✂️</div>
+    <div class="title">Wolf Friseur</div>
+    <div class="sub2">Besuch erfassen</div>
+    <div class="div"></div>
+    <div class="field">
+      <label>Ihre Handynummer</label>
+      <input type="tel" id="askPhone" placeholder="+49 151 00000000" autocomplete="tel"/>
+    </div>
+    <div class="field">
+      <label>Passwort</label>
+      <input type="password" id="askPass" placeholder="Ihr Passwort"/>
+    </div>
+    <button class="btn" id="askBtn" onclick="checkCustomer()">Besuch bestätigen</button>
+    <div class="msg" id="askMsg"></div>
+    <div class="div"></div>
+    <p class="note">Noch kein Konto? Jetzt kostenlos registrieren:</p>
+    <a href="register.html" class="btn outline" style="display:block;margin-top:.6rem;text-align:center;padding:.78rem;text-decoration:none;font-size:.72rem;font-weight:700;letter-spacing:.16em">Neues Konto erstellen</a>
+  </div>
+
+  <!-- ③ Besuch gespeichert -->
+  <div id="stStamp" style="display:none">
+    <div class="ring green">✓</div>
+    <div class="title">Besuch gespeichert!</div>
+    <div class="sub2" id="stampSub">Vielen Dank für Ihren Besuch</div>
+    <div class="cust"><strong id="stampName">–</strong><span id="stampPhone">–</span></div>
+    <div class="div"></div>
+    <div class="mc-grid" id="stampCircles"></div>
+    <div class="cnt">Besuch Nr. <span id="stampCount">–</span> von 10</div>
+    <a href="card.html" class="link-go">Meine Karte anzeigen</a>
+  </div>
+
+  <!-- ④ 10 erreicht → 7 € Rabatt -->
+  <div id="stFree" style="display:none">
+    <div class="ring navy">🏆</div>
+    <div class="title">10 Besuche erreicht!</div>
+    <div class="sub2">Herzlichen Glückwunsch!</div>
+    <div class="cust"><strong id="freeName">–</strong></div>
+    <div class="ribbon red-accent">
+      <span class="rt">🎉 7 € Rabatt verdient!</span>
+      <span class="rs">Wird bei Ihrem nächsten Besuch eingelöst</span>
+    </div>
+    <p class="note">Bei Ihrem nächsten Besuch (QR-Scan oder bestätigter Termin) erhalten Sie 7 € Rabatt auf Ihren Haarschnitt und ein neuer Zyklus beginnt.</p>
+    <a href="card.html" class="link-go">Meine Karte anzeigen</a>
+  </div>
+
+  <!-- ⑤ Rabatt eingelöst -->
+  <div id="stRedeem" style="display:none">
+    <div class="ring blue">🎊</div>
+    <div class="title">Rabatt eingelöst!</div>
+    <div class="sub2">7 € Rabatt auf Ihren Haarschnitt!</div>
+    <div class="cust"><strong id="redeemName">–</strong></div>
+    <div class="div"></div>
+    <p class="note">Herzlichen Glückwunsch! 🎉<br/>Ein neuer Zyklus hat begonnen – 10 neue Felder warten auf Sie!</p>
+    <div class="mc-grid" id="redeemCircles"></div>
+    <a href="card.html" class="link-go">Zurück zur Karte</a>
+  </div>
+
+  <!-- ⑥ Fehler -->
+  <div id="stErr" style="display:none">
+    <div class="ring red">✕</div>
+    <div class="title">Fehler aufgetreten</div>
+    <div class="sub2" id="errMsg">–</div>
+    <a href="register.html" class="link-go" style="margin-top:1.5rem">Jetzt registrieren</a>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  const FB={apiKey:"YOUR_FIREBASE_API_KEY",authDomain:"your-firebase-project.firebaseapp.com",databaseURL:"https://your-firebase-project-default-rtdb.europe-west1.firebasedatabase.app",projectId:"your-firebase-project",storageBucket:"your-firebase-project.firebasestorage.app",messagingSenderId:"000000000000",appId:"YOUR_APP_ID"};
+  const db=getDatabase(initializeApp(FB));
+  const toKey=p=>p.replace(/[\s\+\-\(\)]/g,'').replace(/[.$#\[\]\/]/g,'');
+  // gleiche Nummer in verschiedenen Schreibweisen (0171…, 49171…, 0049171…)
+  const keyVariants=k=>{const v=[k];let m;if((m=k.match(/^0049(\d+)$/))){v.push('49'+m[1],'0'+m[1])}else if((m=k.match(/^49(\d+)$/))){v.push('0'+m[1],'0049'+m[1])}else if((m=k.match(/^0([1-9]\d+)$/))){v.push('49'+m[1],'0049'+m[1])}return [...new Set(v)]};
+  async function findCustomer(k){for(const key of keyVariants(k)){const s=await get(ref(db,'customers/'+key));if(s.exists())return{key,data:s.val()}}return null}
+  const isToday=ts=>!!ts&&new Date(ts).toDateString()===new Date().toDateString();
+
+  const STATES=['stLoad','stAsk','stStamp','stFree','stRedeem','stErr'];
+  function show(id,bc){STATES.forEach(s=>{document.getElementById(s).style.display=s===id?'block':'none'});document.body.className=bc||''}
+  function buildMC(cid,visits,newIdx){const el=document.getElementById(cid);el.innerHTML='';for(let i=0;i<10;i++){const c=document.createElement('div');const done=i<visits;c.className='mc'+(done?' done':'');if(done&&i===newIdx)c.classList.add('new');c.textContent=done?'✓':String(i+1);el.appendChild(c)}}
+  function showStamp(data,v,newIdx,sub){
+    document.getElementById('stampSub').textContent=sub;
+    document.getElementById('stampName').textContent=data.name;
+    document.getElementById('stampPhone').textContent=data.phone;
+    document.getElementById('stampCount').textContent=v;
+    buildMC('stampCircles',v,newIdx);show('stStamp','s-stamp');
+  }
+  function showRedeem(data,v){document.getElementById('redeemName').textContent=data.name;buildMC('redeemCircles',v,0);show('stRedeem','s-redeem')}
+  function showFree(data){document.getElementById('freeName').textContent=data.name;show('stFree','s-free')}
+
+  // Ein Besuch pro Tag – egal ob per QR-Scan oder durch Bestätigung des Termins im Dashboard.
+  async function processVisit(key,data){
+    try{
+      const visits=data.visits||0;const freeReady=!!data.freeReady;
+
+      if(isToday(data.lastVisit)||isToday(data.lastRedeem)){
+        if(freeReady){showFree(data);return}
+        if(isToday(data.lastRedeem)){showRedeem(data,visits);return}
+        showStamp(data,visits,-1,'Ihr heutiger Besuch wurde bereits erfasst');return;
+      }
+
+      if(freeReady){
+        await update(ref(db,'customers/'+key),{visits:1,freeReady:false,freeUsed:(data.freeUsed||0)+1,lastRedeem:Date.now()});
+        showRedeem(data,1);return;
+      }
+
+      const newV=visits+1;
+      if(newV>=10){
+        await update(ref(db,'customers/'+key),{visits:10,freeReady:true,lastVisit:Date.now()});
+        showFree(data);
+      }else{
+        await update(ref(db,'customers/'+key),{visits:newV,lastVisit:Date.now()});
+        showStamp(data,newV,newV-1,'Vielen Dank für Ihren Besuch');
+      }
+    }catch(e){show('stErr','s-err');document.getElementById('errMsg').textContent='Fehler: '+e.message}
+  }
+
+  window.checkCustomer=async function(){
+    const phone=toKey(document.getElementById('askPhone').value.trim());
+    const pass=document.getElementById('askPass').value;
+    const msgEl=document.getElementById('askMsg');
+    const showM=t=>{msgEl.textContent=t;msgEl.className='msg err'};
+    const resetBtn=()=>{btn.disabled=false;btn.textContent='Besuch bestätigen'};
+    if(!phone||!pass){showM('Bitte alle Felder ausfüllen');return}
+    const btn=document.getElementById('askBtn');
+    btn.disabled=true;btn.innerHTML='<span class="spin"></span>Wird geprüft...';
+    try{
+      const found=await findCustomer(phone);
+      if(!found){showM('Nummer nicht registriert – bitte zuerst registrieren');resetBtn();return}
+      if(found.data.password!==pass){showM('Falsches Passwort');resetBtn();return}
+      await processVisit(found.key,found.data);
+    }catch(e){showM('Fehler: '+e.message);resetBtn()}
+  };
+
+  show('stAsk','s-ask');
+  document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('stAsk').style.display!=='none')window.checkCustomer()});
+</script>
+</body>
+</html>

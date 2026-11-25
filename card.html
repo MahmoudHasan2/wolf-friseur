@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wolf Friseur – Kundenkarte</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --primary:   #1a3a6e;
+      --secondary: #c0392b;
+      --white:     #ffffff;
+      --bg-dark:   #0a0a0a;
+      --text-secondary: #666666;
+      --text-muted:     #888888;
+      --glass-bg:     rgba(255,255,255,0.03);
+      --glass-border: rgba(255,255,255,0.08);
+      --blue-glow:    rgba(26,58,110,0.6);
+      --success: #2ecc71;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{
+      background:var(--bg-dark);color:var(--white);
+      font-family:'Montserrat',sans-serif;
+      min-height:100vh;display:flex;flex-direction:column;
+      align-items:center;padding:2rem 1rem 3rem;
+      position:relative;overflow-x:hidden;
+      transition:background .9s,color .9s;
+    }
+    body::before{
+      content:'';position:fixed;inset:0;pointer-events:none;
+      background:
+        radial-gradient(ellipse at 15% 15%, rgba(26,58,110,.12) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 85%, rgba(192,57,43,.07) 0%, transparent 50%);
+      transition:opacity .9s;
+    }
+    body.free-mode{background:#f5f5f5;color:#333333}
+    body.free-mode::before{opacity:.1}
+
+    /* ── LOGIN ── */
+    #loginWrap{width:100%;max-width:420px;padding-top:1.5rem}
+    .logo{display:flex;flex-direction:column;align-items:center;gap:.64rem;margin-bottom:2rem}
+    .logo img{width:78px}
+    .logo .name{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:700;letter-spacing:.27em;color:var(--white);text-transform:uppercase}
+    .logo .tag{font-size:.6rem;letter-spacing:.17em;color:var(--text-muted);text-transform:uppercase}
+
+    .panel{
+      background:var(--glass-bg);border:1px solid var(--glass-border);
+      border-radius:4px;padding:2.2rem 1.9rem;position:relative;
+      box-shadow:0 8px 32px rgba(0,0,0,.4),0 0 0 1px rgba(26,58,110,.15);
+    }
+    .panel::before{content:'';position:absolute;top:0;right:0;width:34px;height:34px;border-top:2px solid var(--primary);border-right:2px solid var(--primary);border-radius:0 4px 0 0}
+    .panel::after {content:'';position:absolute;bottom:0;left:0;width:34px;height:34px;border-bottom:2px solid var(--primary);border-left:2px solid var(--primary);border-radius:0 0 0 4px}
+
+    h2{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;text-align:center;color:var(--white);margin-bottom:.28rem}
+    .sub{font-size:.62rem;letter-spacing:.15em;color:var(--text-muted);text-align:center;text-transform:uppercase;margin-bottom:1.4rem}
+    .div{height:1px;background:linear-gradient(90deg,transparent,var(--primary),transparent);opacity:.55;margin-bottom:1.4rem}
+
+    .field{margin-bottom:1rem}
+    .field label{display:block;font-size:.6rem;letter-spacing:.15em;color:#6b8fd4;text-transform:uppercase;margin-bottom:.42rem;font-weight:500}
+    .field input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:3px;color:var(--white);font-family:'Montserrat',sans-serif;font-size:.9rem;padding:.7rem .95rem;outline:none;transition:border-color .22s,background .22s,box-shadow .22s}
+    .field input:focus{border-color:var(--primary);background:rgba(26,58,110,.08);box-shadow:0 0 0 3px rgba(26,58,110,.18)}
+    .field input::placeholder{color:var(--text-muted)}
+    .field input[type=tel]{direction:ltr;text-align:left}
+
+    .btn{width:100%;margin-top:.22rem;padding:.86rem;background:var(--primary);color:var(--white);font-family:'Montserrat',sans-serif;font-size:.77rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;border:none;border-radius:3px;cursor:pointer;transition:background .2s,transform .12s,box-shadow .2s;box-shadow:0 4px 15px rgba(26,58,110,.4)}
+    .btn:hover{background:#1e4480;transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,58,110,.5)}
+    .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+
+    .msg{margin-top:.78rem;padding:.62rem .88rem;border-radius:3px;font-size:.75rem;text-align:center;display:none}
+    .msg.err{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.35);color:#e74c3c;display:block}
+
+    .link-row{text-align:center;margin-top:1.1rem;font-size:.7rem;color:var(--text-muted)}
+    .link-row a{color:#6b8fd4;text-decoration:none;font-weight:600}
+    .link-row a:hover{color:var(--white)}
+
+    .spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.22);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:4px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+
+    /* ── CARD PANEL ── */
+    #cardWrap{display:none;width:100%;max-width:500px}
+
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.8rem;padding-bottom:1rem;border-bottom:1px solid rgba(255,255,255,.08)}
+    .topbar .lft{display:flex;align-items:center;gap:.7rem}
+    .topbar img{width:42px}
+    .topbar .sname{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;letter-spacing:.22em;color:var(--white);text-transform:uppercase}
+    .topbar .stag{font-size:.57rem;letter-spacing:.12em;color:var(--text-muted);text-transform:uppercase}
+
+    .out-btn{background:transparent;border:1px solid rgba(26,58,110,.5);color:#6b8fd4;font-family:'Montserrat',sans-serif;font-size:.6rem;letter-spacing:.1em;padding:.36rem .72rem;border-radius:3px;cursor:pointer;text-transform:uppercase;transition:background .2s,color .2s}
+    .out-btn:hover{background:rgba(26,58,110,.15);color:var(--white)}
+
+    /* free banner */
+    #freeBanner{display:none;border-radius:4px;padding:1.15rem 1.4rem;text-align:center;margin-bottom:1.6rem;background:linear-gradient(135deg,var(--primary),#2a5298,var(--primary));background-size:200% 200%;animation:sh 3s ease infinite;border:1px solid rgba(26,58,110,.5);box-shadow:0 0 30px rgba(26,58,110,.4)}
+    #freeBanner.show{display:block}
+    @keyframes sh{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+    #freeBanner .ft{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--white);display:block}
+    #freeBanner .fs{font-size:.63rem;letter-spacing:.1em;color:rgba(255,255,255,.7);text-transform:uppercase;display:block;margin-top:.25rem}
+    #freeBanner .fn{font-size:.62rem;color:rgba(255,255,255,.55);margin-top:.5rem;display:block}
+
+    /* flip card */
+    .card-wrap{perspective:1200px;width:100%;margin-bottom:.6rem;cursor:pointer}
+    .card-inner{position:relative;width:100%;padding-bottom:60%;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,0,.2,1)}
+    .card-inner.flipped{transform:rotateY(180deg)}
+    .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:12px;overflow:hidden}
+
+    /* FRONT */
+    .front{
+      background:linear-gradient(135deg,var(--primary) 0%,#0f2347 50%,#1a3a6e 100%);
+      display:flex;flex-direction:column;justify-content:space-between;padding:1.5rem;
+      border:1px solid rgba(26,58,110,.6);
+      box-shadow:0 8px 32px rgba(26,58,110,.3);
+    }
+    .front::before{content:'';position:absolute;inset:6px;border:1px solid rgba(255,255,255,.08);border-radius:8px;pointer-events:none}
+    /* red scissor accent line */
+    .front::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--secondary),transparent)}
+
+    .f-top{display:flex;align-items:flex-start;justify-content:space-between}
+    .f-logo img{width:50px}
+    .f-badge{font-family:'Cormorant Garamond',serif;font-size:.57rem;letter-spacing:.18em;color:rgba(255,255,255,.75);text-transform:uppercase;text-align:right;line-height:1.7}
+    .f-badge strong{display:block;font-size:.85rem;font-weight:700;color:var(--white)}
+
+    .f-mid{text-align:center}
+    .f-salon{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:700;letter-spacing:.28em;color:var(--white);text-transform:uppercase;text-shadow:0 0 20px rgba(255,255,255,.18)}
+    .f-addr{font-size:.55rem;letter-spacing:.1em;color:rgba(255,255,255,.5);margin-top:.22rem;text-transform:uppercase}
+    .f-bottom{display:flex;flex-direction:column;gap:.18rem}
+    .f-name{font-size:.88rem;font-weight:600;color:var(--white);letter-spacing:.04em}
+    .f-phone{font-size:.67rem;color:rgba(255,255,255,.55);direction:ltr;text-align:right}
+
+    /* BACK */
+    .back{
+      background:linear-gradient(135deg,#0f2347 0%,var(--primary) 100%);
+      transform:rotateY(180deg);
+      display:flex;flex-direction:column;align-items:center;
+      justify-content:center;padding:1.3rem 1.5rem;gap:.7rem;
+      border:1px solid rgba(26,58,110,.6);
+    }
+    .b-label{font-size:.57rem;letter-spacing:.18em;color:rgba(255,255,255,.65);text-transform:uppercase}
+    .circles{display:grid;grid-template-columns:repeat(5,1fr);gap:.65rem;width:100%}
+    .circle{aspect-ratio:1;border-radius:50%;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;transition:all .4s ease;font-size:clamp(.58rem,2vw,.82rem)}
+    .circle.done{border-color:var(--success);background:rgba(46,204,113,.18);color:var(--success);font-weight:700;box-shadow:0 0 10px rgba(46,204,113,.25)}
+    .circle.empty{color:rgba(255,255,255,.2);font-size:.48rem}
+    .b-count{font-size:.63rem;color:rgba(255,255,255,.55);letter-spacing:.08em}
+    .b-count span{color:var(--white);font-weight:600}
+
+    .flip-hint{font-size:.59rem;color:var(--text-muted);text-align:center;margin-bottom:1.5rem}
+    .flip-hint b{color:#6b8fd4;cursor:pointer}
+    .flip-hint b:hover{color:var(--white)}
+
+    /* FREE MODE overrides */
+    body.free-mode .topbar{border-color:rgba(26,58,110,.2)}
+    body.free-mode .topbar .sname{color:var(--primary)}
+    body.free-mode .topbar .stag{color:var(--text-secondary)}
+    body.free-mode .out-btn{border-color:rgba(26,58,110,.3);color:var(--primary)}
+    body.free-mode .flip-hint{color:var(--text-secondary)}
+    body.free-mode .flip-hint b{color:var(--primary)}
+    body.free-mode #freeBanner{box-shadow:0 0 30px rgba(26,58,110,.2)}
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginWrap">
+  <div class="logo">
+    <img src="https://i.ibb.co/pvm4r092/Element-255.png" alt="Wolf Friseur" onerror="this.style.display='none'"/>
+    <span class="name">Wolf Friseur</span>
+    <span class="tag">Loyalitätskarte</span>
+  </div>
+  <div class="panel">
+    <h2>Anmelden</h2>
+    <p class="sub">Kundenkarte aufrufen</p>
+    <div class="div"></div>
+    <div class="field">
+      <label>Handynummer</label>
+      <input type="tel" id="lPhone" placeholder="+49 151 00000000"/>
+    </div>
+    <div class="field">
+      <label>Passwort</label>
+      <input type="password" id="lPass" placeholder="Ihr Passwort"/>
+    </div>
+    <button class="btn" id="lBtn" onclick="doLogin()">Anmelden</button>
+    <div class="msg" id="lMsg"></div>
+    <div class="link-row">Noch kein Konto? <a href="register.html">Jetzt registrieren</a></div>
+  </div>
+</div>
+
+<!-- CARD PANEL -->
+<div id="cardWrap">
+  <div class="topbar">
+    <div class="lft">
+      <img src="https://i.ibb.co/pvm4r092/Element-255.png" alt="" onerror="this.style.display='none'"/>
+      <div>
+        <div class="sname">Wolf Friseur</div>
+        <div class="stag">Loyalitätskarte</div>
+      </div>
+    </div>
+    <button class="out-btn" onclick="logout()">Abmelden</button>
+  </div>
+
+  <div id="freeBanner">
+    <span class="ft">🎉 7 € Rabatt verdient!</span>
+    <span class="fs">Herzlichen Glückwunsch!</span>
+    <span class="fn">Bei Ihrem nächsten Besuch erhalten Sie 7 € Rabatt auf Ihren Haarschnitt</span>
+  </div>
+
+  <div class="card-wrap" onclick="flipCard()">
+    <div class="card-inner" id="ci">
+      <div class="face front">
+        <div class="f-top">
+          <div class="f-logo"><img src="https://i.ibb.co/pvm4r092/Element-255.png" alt="" onerror="this.style.display='none'"/></div>
+          <div class="f-badge">Loyalitätskarte<br><strong>WOLF FRISEUR</strong>Mitgliedschaft</div>
+        </div>
+        <div class="f-mid">
+          <div class="f-salon">Wolf Friseur</div>
+          <div class="f-addr">Musterstraße 1 · 38547 Calberlah · Deutschland</div>
+        </div>
+        <div class="f-bottom">
+          <div class="f-name" id="cName">–</div>
+          <div class="f-phone" id="cPhone">–</div>
+        </div>
+      </div>
+      <div class="face back">
+        <div class="b-label">Meine Besuche</div>
+        <div class="circles" id="circles"></div>
+        <div class="b-count"><span id="vCount">0</span> / 10 Besuche</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flip-hint">Karte antippen zum Umdrehen · <b onclick="flipCard()">Besuche anzeigen</b></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  const FB={apiKey:"YOUR_FIREBASE_API_KEY",authDomain:"your-firebase-project.firebaseapp.com",databaseURL:"https://your-firebase-project-default-rtdb.europe-west1.firebasedatabase.app",projectId:"your-firebase-project",storageBucket:"your-firebase-project.firebasestorage.app",messagingSenderId:"000000000000",appId:"YOUR_APP_ID"};
+  const db=getDatabase(initializeApp(FB));
+  const toKey=p=>p.replace(/[\s\+\-\(\)]/g,'').replace(/[.$#\[\]\/]/g,'');
+  const keyVariants=k=>{const v=[k];let m;if((m=k.match(/^0049(\d+)$/))){v.push('49'+m[1],'0'+m[1])}else if((m=k.match(/^49(\d+)$/))){v.push('0'+m[1],'0049'+m[1])}else if((m=k.match(/^0([1-9]\d+)$/))){v.push('49'+m[1],'0049'+m[1])}return [...new Set(v)]};
+  async function findCustomer(k){for(const key of keyVariants(k)){const s=await get(ref(db,'customers/'+key));if(s.exists())return{key,data:s.val()}}return null}
+  let flipped=false;
+
+  function buildCircles(v){
+    const g=document.getElementById('circles');g.innerHTML='';
+    for(let i=0;i<10;i++){const c=document.createElement('div');c.className='circle '+(i<v?'done':'empty');c.textContent=i<v?'✓':String(i+1);g.appendChild(c)}
+    document.getElementById('vCount').textContent=v;
+  }
+
+  function showCard(data){
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('cardWrap').style.display='block';
+    document.getElementById('cName').textContent=data.name;
+    document.getElementById('cPhone').textContent=data.phone;
+    buildCircles(data.visits||0);
+    const free=data.freeReady||false;
+    document.getElementById('freeBanner').className=free?'show':'';
+    free?document.body.classList.add('free-mode'):document.body.classList.remove('free-mode');
+  }
+
+  window.flipCard=function(){flipped=!flipped;document.getElementById('ci').classList.toggle('flipped',flipped)};
+  window.logout=function(){
+    sessionStorage.removeItem('wf_key');
+    document.getElementById('cardWrap').style.display='none';
+    document.getElementById('loginWrap').style.display='block';
+    document.body.classList.remove('free-mode');
+    flipped=false;document.getElementById('ci').classList.remove('flipped');
+  };
+
+  function msg(t,c){const el=document.getElementById('lMsg');el.textContent=t;el.className='msg '+c}
+
+  window.doLogin=async function(){
+    const phone=toKey(document.getElementById('lPhone').value.trim());
+    const pass=document.getElementById('lPass').value;
+    if(!phone||!pass){msg('Bitte alle Felder ausfüllen','err');return}
+    const btn=document.getElementById('lBtn');
+    btn.disabled=true;btn.innerHTML='<span class="spin"></span>Wird geladen...';
+    try{
+      const found=await findCustomer(phone);
+      if(!found){msg('Nummer nicht registriert','err')}
+      else{const d=found.data;if(d.password!==pass){msg('Falsches Passwort','err')}else{sessionStorage.setItem('wf_key',found.key);showCard(d)}}
+    }catch(e){msg('Fehler: '+e.message,'err')}
+    btn.disabled=false;btn.textContent='Anmelden';
+  };
+
+  const saved=sessionStorage.getItem('wf_key');
+  if(saved)(async()=>{try{const s=await get(ref(db,'customers/'+saved));if(s.exists())showCard(s.val())}catch(e){}})();
+  document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('loginWrap').style.display!=='none')window.doLogin()});
+</script>
+</body>
+</html>

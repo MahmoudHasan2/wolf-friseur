@@ -1,0 +1,56 @@
+[
+    {
+        "key": "haare",
+        "label": "Haarschnitt",
+        "duration": 30,
+        "price": 20,
+        "description": "Klassischer Haarschnitt, individuell nach Wunsch und Kopfform gestaltet.",
+        "category": "herr",
+        "order": 1
+    },
+    {
+        "key": "bart",
+        "label": "Bartschnitt",
+        "duration": 30,
+        "price": 13,
+        "description": "Präzises Bartschneiden und -formen für ein gepflegtes Erscheinungsbild.",
+        "category": "herr",
+        "order": 2
+    },
+    {
+        "key": "beide",
+        "label": "Haare & Bart",
+        "duration": 60,
+        "price": 33,
+        "description": "Kombination aus Haarschnitt und Bartschnitt in einem entspannten Termin.",
+        "category": "herr",
+        "order": 3
+    },
+    {
+        "key": "hamam",
+        "label": "Haare waschen, schneiden",
+        "duration": 60,
+        "price": 23,
+        "description": "Haarschnitt inklusive Haare waschen mit Schampo und Spülung",
+        "category": "herr",
+        "order": 4
+    },
+    {
+        "key": "vip_complete",
+        "label": "Komplettepaket",
+        "duration": 90,
+        "price": 38,
+        "description": "Haarschnitt, Bartschnitt, Ohren und Nasen entwachsen, Augenbrauen zupfen und stylen.",
+        "category": "herr",
+        "order": 5
+    },
+    {
+        "key": "kind",
+        "label": "Kinderhaarschnitt",
+        "duration": 30,
+        "price": null,
+        "description": "",
+        "category": "kind",
+        "order": 1
+    }
+]

@@ -1,0 +1,13 @@
+// In config.php einfügen (z.B. direkt unter dem 'sms' => [...] Block):
+
+    'telegram' => [
+        'bot_token' => '',        // Token von @BotFather
+        'chat_ids'  => [''],      // Chat-ID(s) des Friseurs (und deine zum Testen)
+    ],
+
+// Einrichtung (2 Minuten):
+// 1) In Telegram @BotFather öffnen -> /newbot -> Name wählen -> Token kopieren
+// 2) Der Friseur öffnet den neuen Bot und schreibt "/start"
+// 3) Im Browser öffnen: https://api.telegram.org/bot<TOKEN>/getUpdates
+//    -> bei "chat":{"id":123456789,...} steht die Chat-ID
+// 4) Token + ID oben eintragen, Datei hochladen, Testbuchung machen

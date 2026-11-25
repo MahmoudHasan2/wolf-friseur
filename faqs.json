@@ -1,0 +1,14 @@
+[
+    {
+        "id": "faq_default_2",
+        "order": 2,
+        "question": "Kann ich meinen Termin stornieren oder verschieben?",
+        "answer": "Ja, Sie können Ihren Termin bis spätestens 3 Stunden vorher kostenlos online stornieren. Für eine Verschiebung stornieren Sie den alten Termin und buchen einfach einen neuen."
+    },
+    {
+        "id": "8a25421932d9ea63",
+        "question": "BEI WEM KANN MAN TERMINE MACHEN?",
+        "answer": "Auf dieser Seite kriegen Sie Termine nur bei der Chef •RSTAM•",
+        "order": 3
+    }
+]

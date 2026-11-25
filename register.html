@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wolf Friseur – Mitgliedschaft registrieren</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --primary:   #1a3a6e;
+      --secondary: #c0392b;
+      --white:     #ffffff;
+      --bg-light:  #f5f5f5;
+      --bg-dark:   #0a0a0a;
+      --text-primary:   #333333;
+      --text-secondary: #666666;
+      --text-muted:     #888888;
+      --glass-bg:     rgba(255,255,255,0.03);
+      --glass-border: rgba(255,255,255,0.08);
+      --blue-glow:    rgba(26,58,110,0.6);
+      --success: #2ecc71;
+      --error:   #e74c3c;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{
+      background:var(--bg-dark);color:var(--white);
+      font-family:'Montserrat',sans-serif;
+      min-height:100vh;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;padding:2rem 1rem;
+      position:relative;overflow-x:hidden;
+    }
+    /* subtle particle background */
+    body::before{
+      content:'';position:fixed;inset:0;pointer-events:none;
+      background:
+        radial-gradient(ellipse at 20% 20%, rgba(26,58,110,0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 80%, rgba(192,57,43,0.08) 0%, transparent 50%);
+    }
+    .logo{display:flex;flex-direction:column;align-items:center;gap:.65rem;margin-bottom:2.2rem}
+    .logo img{width:82px}
+    .logo .name{
+      font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;
+      letter-spacing:.28em;color:var(--white);text-transform:uppercase;
+    }
+    .logo .tag{font-size:.62rem;letter-spacing:.18em;color:var(--text-muted);text-transform:uppercase}
+
+    .card{
+      background:var(--glass-bg);
+      border:1px solid var(--glass-border);
+      border-radius:4px;
+      padding:2.4rem 2rem;width:100%;max-width:420px;
+      position:relative;
+      box-shadow:0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(26,58,110,0.2);
+    }
+    /* navy corner accents */
+    .card::before{content:'';position:absolute;top:0;right:0;width:36px;height:36px;border-top:2px solid var(--primary);border-right:2px solid var(--primary);border-radius:0 4px 0 0}
+    .card::after {content:'';position:absolute;bottom:0;left:0;width:36px;height:36px;border-bottom:2px solid var(--primary);border-left:2px solid var(--primary);border-radius:0 0 0 4px}
+
+    h1{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;text-align:center;color:var(--white);margin-bottom:.3rem}
+    .sub{font-size:.63rem;letter-spacing:.16em;color:var(--text-muted);text-align:center;text-transform:uppercase;margin-bottom:1.6rem}
+    .divider{height:1px;background:linear-gradient(90deg,transparent,var(--primary),transparent);opacity:.6;margin-bottom:1.6rem}
+
+    .field{margin-bottom:1.15rem}
+    .field label{display:block;font-size:.62rem;letter-spacing:.15em;color:rgba(26,58,110,.9);color:#6b8fd4;text-transform:uppercase;margin-bottom:.45rem;font-weight:500}
+    .field input{
+      width:100%;background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:3px;color:var(--white);
+      font-family:'Montserrat',sans-serif;font-size:.9rem;
+      padding:.74rem 1rem;outline:none;
+      transition:border-color .22s,background .22s,box-shadow .22s;
+    }
+    .field input:focus{
+      border-color:var(--primary);
+      background:rgba(26,58,110,.08);
+      box-shadow:0 0 0 3px rgba(26,58,110,.18);
+    }
+    .field input::placeholder{color:var(--text-muted)}
+    .field input[type=tel]{direction:ltr;text-align:left;letter-spacing:.04em}
+
+    .btn{
+      width:100%;margin-top:.4rem;padding:.9rem;
+      background:var(--primary);
+      color:var(--white);font-family:'Montserrat',sans-serif;
+      font-size:.78rem;font-weight:700;letter-spacing:.22em;
+      text-transform:uppercase;border:none;border-radius:3px;cursor:pointer;
+      transition:background .2s,transform .12s,box-shadow .2s;
+      box-shadow:0 4px 15px rgba(26,58,110,.4);
+    }
+    .btn:hover{background:#1e4480;transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,58,110,.5)}
+    .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+
+    .msg{margin-top:.9rem;padding:.68rem .95rem;border-radius:3px;font-size:.76rem;text-align:center;display:none}
+    .msg.err{background:rgba(231,76,60,.12);border:1px solid rgba(231,76,60,.35);color:#e74c3c;display:block}
+    .msg.ok {background:rgba(46,204,113,.12);border:1px solid rgba(46,204,113,.35);color:#2ecc71;display:block}
+
+    .link-row{text-align:center;margin-top:1.25rem;font-size:.71rem;color:var(--text-muted)}
+    .link-row a{color:#6b8fd4;text-decoration:none;font-weight:600}
+    .link-row a:hover{color:var(--white)}
+
+    .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;vertical-align:middle;margin-right:5px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+  <div class="logo">
+    <img src="https://i.ibb.co/pvm4r092/Element-255.png" alt="Wolf Friseur" onerror="this.style.display='none'"/>
+    <span class="name">Wolf Friseur</span>
+    <span class="tag">Luxus Friseursalon · Calberlah</span>
+  </div>
+
+  <div class="card">
+    <h1>Mitgliedschaft erstellen</h1>
+    <p class="sub">Neue Kundenkarte registrieren</p>
+    <div class="divider"></div>
+
+    <div class="field">
+      <label>Vollständiger Name</label>
+      <input type="text" id="name" placeholder="Ihr vollständiger Name" autocomplete="name"/>
+    </div>
+    <div class="field">
+      <label>Handynummer</label>
+      <input type="tel" id="phone" placeholder="+49 151 00000000" autocomplete="tel"/>
+    </div>
+    <div class="field">
+      <label>Passwort</label>
+      <input type="password" id="pass" placeholder="Mindestens 4 Zeichen" autocomplete="new-password"/>
+    </div>
+
+    <button class="btn" id="regBtn" onclick="doRegister()">Mitgliedschaft registrieren</button>
+    <div class="msg" id="msg"></div>
+    <div class="link-row">Bereits Mitglied? <a href="card.html">Anmelden</a></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    const FB={apiKey:"YOUR_FIREBASE_API_KEY",authDomain:"your-firebase-project.firebaseapp.com",databaseURL:"https://your-firebase-project-default-rtdb.europe-west1.firebasedatabase.app",projectId:"your-firebase-project",storageBucket:"your-firebase-project.firebasestorage.app",messagingSenderId:"000000000000",appId:"YOUR_APP_ID"};
+    const db=getDatabase(initializeApp(FB));
+    const toKey=p=>p.replace(/[\s\+\-\(\)]/g,'').replace(/[.$#\[\]\/]/g,'');
+    const keyVariants=k=>{const v=[k];let m;if((m=k.match(/^0049(\d+)$/))){v.push('49'+m[1],'0'+m[1])}else if((m=k.match(/^49(\d+)$/))){v.push('0'+m[1],'0049'+m[1])}else if((m=k.match(/^0([1-9]\d+)$/))){v.push('49'+m[1],'0049'+m[1])}return [...new Set(v)]};
+    function msg(t,c){const el=document.getElementById('msg');el.textContent=t;el.className='msg '+c}
+
+    window.doRegister=async function(){
+      const name=document.getElementById('name').value.trim();
+      const phone=document.getElementById('phone').value.trim();
+      const pass=document.getElementById('pass').value;
+      if(!name||!phone||!pass){msg('Bitte alle Felder ausfüllen','err');return}
+      if(phone.replace(/\D/g,'').length<7){msg('Ungültige Handynummer','err');return}
+      if(pass.length<4){msg('Passwort muss mindestens 4 Zeichen haben','err');return}
+      const btn=document.getElementById('regBtn');
+      btn.disabled=true;btn.innerHTML='<span class="spin"></span>Wird registriert...';
+      try{
+        const key=toKey(phone);
+        let exists=false;
+        for(const k of keyVariants(key)){const s=await get(ref(db,'customers/'+k));if(s.exists()){exists=true;break}}
+        if(exists){msg('Diese Nummer ist bereits registriert – bitte anmelden','err');btn.disabled=false;btn.textContent='Mitgliedschaft registrieren';return}
+        await set(ref(db,'customers/'+key),{name,phone,password:pass,visits:0,freeReady:false,createdAt:Date.now()});
+        sessionStorage.setItem('wf_key',key);
+        msg('Registrierung erfolgreich! Weiterleitung...','ok');
+        setTimeout(()=>{window.location.href='card.html'},900);
+      }catch(e){msg('Fehler: '+e.message,'err');btn.disabled=false;btn.textContent='Mitgliedschaft registrieren'}
+    };
+    document.addEventListener('keydown',e=>{if(e.key==='Enter')window.doRegister()});
+  </script>
+</body>
+</html>
